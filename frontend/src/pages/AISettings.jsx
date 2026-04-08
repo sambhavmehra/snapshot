@@ -1,8 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
-import { Bot, Save, SlidersHorizontal } from 'lucide-react';
+import { Bot, ChevronDown, Save, SlidersHorizontal } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import Layout from '../components/Layout';
+import { API_BASE_URL } from '../config/api';
 
 const presets = {
   perspective: ['student', 'beginner', 'exam candidate', 'teacher assistant', 'developer', 'cybersecurity learner'],
@@ -26,7 +27,7 @@ export default function AISettings() {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/api/ai-settings', {
+        const res = await axios.get(`${API_BASE_URL}/api/ai-settings`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setForm(res.data.settings);
@@ -48,7 +49,7 @@ export default function AISettings() {
   const saveSettings = async () => {
     setSaving(true);
     try {
-      const res = await axios.put('http://localhost:5000/api/ai-settings', form, {
+      const res = await axios.put(`${API_BASE_URL}/api/ai-settings`, form, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setForm(res.data.settings);
@@ -64,69 +65,57 @@ export default function AISettings() {
     <Layout>
       <div className="mx-auto w-full max-w-5xl pb-12">
         <div className="mb-8 flex items-center gap-4">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-indigo-100 bg-indigo-50 text-indigo-600">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-white/10 bg-white/10 text-indigo-300">
             <SlidersHorizontal size={24} />
           </div>
           <div>
-            <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">AI Configuration</h1>
-            <p className="font-medium text-slate-500">Set how SnapStudy should respond across analysis, chat, and notes.</p>
+            <h1 className="text-3xl font-extrabold tracking-tight text-white">AI Configuration</h1>
+            <p className="font-medium text-slate-300">Set how SnapStudy should respond across analysis, chat, and notes.</p>
           </div>
         </div>
 
         {loading ? (
-          <div className="rounded-[2rem] border border-slate-200 bg-white/95 p-10 shadow-sm">
+          <div className="rounded-[2rem] border border-white/10 bg-white/8 p-10 shadow-[0_24px_80px_rgba(0,0,0,0.18)] backdrop-blur-2xl">
             <div className="flex flex-col items-center justify-center py-16">
               <div className="h-8 w-8 animate-spin rounded-full border-2 border-indigo-500 border-t-transparent" />
-              <p className="mt-4 text-sm font-medium text-slate-500">Loading AI configuration...</p>
+              <p className="mt-4 text-sm font-medium text-slate-300">Loading AI configuration...</p>
             </div>
           </div>
         ) : (
           <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_22rem]">
-            <section className="rounded-[2rem] border border-slate-200 bg-white/95 p-6 shadow-sm md:p-8">
+            <section className="rounded-[2rem] border border-white/10 bg-white/8 p-6 shadow-[0_24px_80px_rgba(0,0,0,0.18)] backdrop-blur-2xl md:p-8">
               <div className="grid gap-6">
                 <FieldBlock
                   label="Perspective"
                   description="Choose the role or viewpoint the AI should favor by default."
                 >
-                  <select
+                  <SelectField
                     value={form.perspective}
                     onChange={(e) => updateField('perspective', e.target.value)}
-                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-900 outline-none transition-all focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10"
-                  >
-                    {presets.perspective.map((option) => (
-                      <option key={option} value={option}>{option}</option>
-                    ))}
-                  </select>
+                    options={presets.perspective}
+                  />
                 </FieldBlock>
 
                 <FieldBlock
                   label="Tone"
                   description="Control whether answers feel more concise, gentle, technical, or conversational."
                 >
-                  <select
+                  <SelectField
                     value={form.tone}
                     onChange={(e) => updateField('tone', e.target.value)}
-                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-900 outline-none transition-all focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10"
-                  >
-                    {presets.tone.map((option) => (
-                      <option key={option} value={option}>{option}</option>
-                    ))}
-                  </select>
+                    options={presets.tone}
+                  />
                 </FieldBlock>
 
                 <FieldBlock
                   label="Response Style"
                   description="Choose the default structure you want from AI responses."
                 >
-                  <select
+                  <SelectField
                     value={form.response_style}
                     onChange={(e) => updateField('response_style', e.target.value)}
-                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-900 outline-none transition-all focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10"
-                  >
-                    {presets.response_style.map((option) => (
-                      <option key={option} value={option}>{option}</option>
-                    ))}
-                  </select>
+                    options={presets.response_style}
+                  />
                 </FieldBlock>
 
                 <FieldBlock
@@ -138,7 +127,7 @@ export default function AISettings() {
                     value={form.focus}
                     onChange={(e) => updateField('focus', e.target.value)}
                     placeholder="Example: focus on interview-style explanations"
-                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-900 outline-none transition-all focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10"
+                    className="w-full rounded-2xl border border-white/10 bg-white/8 px-4 py-3 text-sm font-medium text-white outline-none transition-all placeholder:text-slate-400 focus:border-indigo-400/40 focus:bg-white/10 focus:ring-4 focus:ring-indigo-400/10"
                   />
                 </FieldBlock>
 
@@ -150,7 +139,7 @@ export default function AISettings() {
                     value={form.custom_instructions}
                     onChange={(e) => updateField('custom_instructions', e.target.value)}
                     placeholder="Example: explain everything with analogies first, then give a technical version."
-                    className="min-h-[14rem] w-full rounded-[1.5rem] border border-slate-200 bg-slate-50 px-4 py-4 text-sm font-medium leading-7 text-slate-800 outline-none transition-all focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10"
+                    className="min-h-[14rem] w-full rounded-[1.5rem] border border-white/10 bg-white/8 px-4 py-4 text-sm font-medium leading-7 text-white outline-none transition-all placeholder:text-slate-400 focus:border-indigo-400/40 focus:bg-white/10 focus:ring-4 focus:ring-indigo-400/10"
                   />
                 </FieldBlock>
 
@@ -158,12 +147,12 @@ export default function AISettings() {
                   <button
                     onClick={saveSettings}
                     disabled={saving}
-                    className="inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-slate-800 disabled:opacity-60"
+                    className="inline-flex items-center gap-2 rounded-2xl bg-[linear-gradient(135deg,#0f172a_0%,#1447b8_58%,#38bdf8_100%)] px-5 py-3 text-sm font-bold text-white disabled:opacity-60"
                   >
                     <Save size={16} />
                     {saving ? 'Saving...' : 'Save Configuration'}
                   </button>
-                  <p className={`text-sm font-medium ${saved ? 'text-emerald-600' : 'text-slate-500'}`}>
+                  <p className={`text-sm font-medium ${saved ? 'text-emerald-300' : 'text-slate-300'}`}>
                     {saved ? 'Configuration saved for all AI tools.' : 'Changes apply after saving.'}
                   </p>
                 </div>
@@ -171,11 +160,11 @@ export default function AISettings() {
             </section>
 
             <aside className="space-y-5">
-              <div className="rounded-[2rem] border border-slate-200 bg-white/95 p-6 shadow-sm">
-                <h2 className="flex items-center gap-2 text-lg font-extrabold text-slate-900">
-                  <Bot size={18} className="text-indigo-600" /> How It Works
+              <div className="rounded-[2rem] border border-white/10 bg-white/8 p-6 shadow-[0_24px_80px_rgba(0,0,0,0.18)] backdrop-blur-2xl">
+                <h2 className="flex items-center gap-2 text-lg font-extrabold text-white">
+                  <Bot size={18} className="text-indigo-300" /> How It Works
                 </h2>
-                <p className="mt-4 text-sm font-medium leading-7 text-slate-500">
+                <p className="mt-4 text-sm font-medium leading-7 text-slate-300">
                   These settings now influence image analysis, dashboard tutoring, AI notes generation, and the note-editing assistant.
                 </p>
               </div>
@@ -205,10 +194,32 @@ function FieldBlock({ label, description, children }) {
   return (
     <div>
       <div className="mb-3">
-        <h2 className="text-base font-extrabold text-slate-900">{label}</h2>
-        <p className="mt-1 text-sm font-medium leading-6 text-slate-500">{description}</p>
+        <h2 className="text-base font-extrabold text-white">{label}</h2>
+        <p className="mt-1 text-sm font-medium leading-6 text-slate-300">{description}</p>
       </div>
       {children}
+    </div>
+  );
+}
+
+function SelectField({ value, onChange, options }) {
+  return (
+    <div className="relative">
+      <select
+        value={value}
+        onChange={onChange}
+        className="w-full appearance-none rounded-2xl border border-white/10 bg-white/8 px-4 py-3 pr-12 text-sm font-medium text-white outline-none transition-all focus:border-indigo-400/40 focus:bg-white/10 focus:ring-4 focus:ring-indigo-400/10"
+      >
+        {options.map((option) => (
+          <option key={option} value={option} className="bg-slate-800 text-white">
+            {option}
+          </option>
+        ))}
+      </select>
+      <ChevronDown
+        size={18}
+        className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-slate-300"
+      />
     </div>
   );
 }

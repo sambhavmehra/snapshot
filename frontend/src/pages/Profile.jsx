@@ -65,13 +65,13 @@ export default function Profile() {
 
         <section className="mt-8 grid gap-8 xl:grid-cols-[minmax(0,1.2fr)_22rem]">
           <div className="space-y-8">
-            <div className="rounded-[2rem] border border-slate-200 bg-white/95 p-6 shadow-sm md:p-8">
+            <div className="rounded-[2rem] border border-white/10 bg-white/8 p-6 shadow-[0_24px_80px_rgba(0,0,0,0.18)] backdrop-blur-2xl md:p-8">
               <div className="mb-6 flex items-start justify-between gap-4">
                 <div>
-                  <h3 className="flex items-center gap-2 text-xl font-extrabold tracking-tight text-slate-900">
-                    <UserRound size={18} className="text-indigo-600" /> Profile Details
+                  <h3 className="flex items-center gap-2 text-xl font-extrabold tracking-tight text-white">
+                    <UserRound size={18} className="text-indigo-300" /> Profile Details
                   </h3>
-                  <p className="mt-2 text-sm font-medium leading-6 text-slate-500">
+                  <p className="mt-2 text-sm font-medium leading-6 text-slate-300">
                     Your username and email are fixed account identifiers and are shown here for reference.
                   </p>
                 </div>
@@ -79,26 +79,26 @@ export default function Profile() {
 
               <div className="grid gap-5 md:grid-cols-2">
                 <Field label="Username">
-                  <div className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 font-medium text-slate-900">
+                  <div className="w-full rounded-2xl border border-white/10 bg-white/8 px-4 py-3.5 font-medium text-white">
                     {user.username}
                   </div>
                 </Field>
 
                 <Field label="Email Address">
-                  <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5">
+                  <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/8 px-4 py-3.5">
                     <Mail size={16} className="text-slate-400" />
-                    <div className="w-full font-medium text-slate-900">{user.email}</div>
+                    <div className="w-full font-medium text-white">{user.email}</div>
                   </div>
                 </Field>
               </div>
             </div>
 
-            <div className="rounded-[2rem] border border-slate-200 bg-white/95 p-6 shadow-sm md:p-8">
+            <div className="rounded-[2rem] border border-white/10 bg-white/8 p-6 shadow-[0_24px_80px_rgba(0,0,0,0.18)] backdrop-blur-2xl md:p-8">
               <div className="mb-6">
-                <h3 className="flex items-center gap-2 text-xl font-extrabold tracking-tight text-slate-900">
-                  <KeyRound size={18} className="text-indigo-600" /> Password & Security
+                <h3 className="flex items-center gap-2 text-xl font-extrabold tracking-tight text-white">
+                  <KeyRound size={18} className="text-indigo-300" /> Password & Security
                 </h3>
-                <p className="mt-2 text-sm font-medium leading-6 text-slate-500">
+                <p className="mt-2 text-sm font-medium leading-6 text-slate-300">
                   Keep your account secure by updating your password when needed.
                 </p>
               </div>
@@ -110,7 +110,7 @@ export default function Profile() {
                     placeholder="Enter current password"
                     value={currentPassword}
                     onChange={(e) => setCurrentPassword(e.target.value)}
-                    className="w-full rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-3.5 font-medium text-slate-900 outline-none transition-all focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10"
+                    className="w-full rounded-2xl border border-white/10 bg-white/8 px-4 py-3.5 font-medium text-white outline-none transition-all placeholder:text-slate-400 focus:border-indigo-400/40 focus:bg-white/10 focus:ring-4 focus:ring-indigo-400/10"
                   />
                 </Field>
 
@@ -120,7 +120,7 @@ export default function Profile() {
                     placeholder="Enter new password"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    className="w-full rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-3.5 font-medium text-slate-900 outline-none transition-all focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10"
+                    className="w-full rounded-2xl border border-white/10 bg-white/8 px-4 py-3.5 font-medium text-white outline-none transition-all placeholder:text-slate-400 focus:border-indigo-400/40 focus:bg-white/10 focus:ring-4 focus:ring-indigo-400/10"
                   />
                 </Field>
               </div>
@@ -135,11 +135,11 @@ export default function Profile() {
           </div>
 
           <aside className="space-y-6">
-            <div className="rounded-[2rem] border border-slate-200 bg-white/95 p-6 shadow-sm">
-              <h3 className="flex items-center gap-2 text-lg font-extrabold text-slate-900">
-                <Sparkles size={18} className="text-indigo-600" /> Workspace Ready
+            <div className="rounded-[2rem] border border-white/10 bg-white/8 p-6 shadow-[0_24px_80px_rgba(0,0,0,0.18)] backdrop-blur-2xl">
+              <h3 className="flex items-center gap-2 text-lg font-extrabold text-white">
+                <Sparkles size={18} className="text-indigo-300" /> Workspace Ready
               </h3>
-              <p className="mt-4 text-sm font-medium leading-7 text-slate-500">
+              <p className="mt-4 text-sm font-medium leading-7 text-slate-300">
                 Your profile is set up for uploads, saved study material, and continued AI conversations from the dashboard.
               </p>
             </div>
@@ -153,7 +153,7 @@ export default function Profile() {
 function Field({ label, children }) {
   return (
     <div>
-      <label className="mb-2 block text-sm font-bold text-slate-700">{label}</label>
+      <label className="mb-2 block text-sm font-bold text-slate-200">{label}</label>
       {children}
     </div>
   );

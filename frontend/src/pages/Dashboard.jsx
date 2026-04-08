@@ -16,6 +16,7 @@ import Layout from '../components/Layout';
 import ImageUploader from '../components/ImageUploader';
 import AnalysisResult from '../components/AnalysisResult';
 import ChatInterface from '../components/ChatInterface';
+import { API_BASE_URL } from '../config/api';
 
 const quickStats = [
   {
@@ -72,7 +73,7 @@ export default function Dashboard() {
     const fetchSession = async () => {
       setSessionLoading(true);
       try {
-        const res = await axios.get(`http://localhost:5000/api/sessions/${requestedSessionId}`, {
+        const res = await axios.get(`${API_BASE_URL}/api/sessions/${requestedSessionId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -106,7 +107,7 @@ export default function Dashboard() {
     formData.append('image', file);
 
     try {
-      const res = await axios.post('http://localhost:5000/api/analyze', formData, {
+      const res = await axios.post(`${API_BASE_URL}/api/analyze`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -148,27 +149,27 @@ export default function Dashboard() {
               className="space-y-8"
             >
               <section className="grid gap-8 xl:grid-cols-[minmax(0,1.2fr)_22rem]">
-                <div className="rounded-[2rem] border border-slate-200 bg-white/95 p-6 shadow-sm md:p-8">
+                <div className="rounded-[2rem] border border-white/10 bg-white/8 p-6 shadow-[0_24px_80px_rgba(0,0,0,0.18)] backdrop-blur-2xl md:p-8">
                   <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
                     <div>
-                      <div className="inline-flex items-center gap-2 rounded-full bg-indigo-50 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.22em] text-indigo-700">
+                      <div className="inline-flex items-center gap-2 rounded-full border border-sky-300/20 bg-sky-400/10 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.22em] text-sky-200">
                         <BadgeCheck size={14} /> Dashboard
                       </div>
-                      <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-slate-900">Upload your image</h2>
-                      <p className="mt-2 max-w-2xl text-sm font-medium leading-6 text-slate-500">
-                        Welcome back, {firstName}. Add one image and let the dashboard build the study session around it.
+                      <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-white">Upload study material</h2>
+                      <p className="mt-2 max-w-2xl text-sm font-medium leading-6 text-slate-300">
+                        Welcome back, {firstName}. Upload a diagram, handwritten page, whiteboard photo, or textbook screenshot and SnapStudy will turn it into a guided study session.
                       </p>
                     </div>
                   </div>
 
                   <div className="mb-6 grid gap-4 md:grid-cols-3">
                     {quickStats.map((item) => (
-                      <div key={item.label} className="rounded-[1.5rem] border border-slate-200 bg-slate-50/80 p-4">
-                        <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-2xl bg-white text-indigo-600 shadow-sm">
+                      <div key={item.label} className="rounded-[1.5rem] border border-white/10 bg-white/6 p-4">
+                        <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10 text-sky-200 shadow-sm">
                           {item.icon}
                         </div>
                         <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-slate-400">{item.label}</p>
-                        <p className="mt-2 text-sm font-semibold leading-6 text-slate-900">{item.value}</p>
+                        <p className="mt-2 text-sm font-semibold leading-6 text-white">{item.value}</p>
                       </div>
                     ))}
                   </div>
@@ -178,12 +179,12 @@ export default function Dashboard() {
 
                 <aside className="space-y-4">
                   {workflowCards.map((item) => (
-                    <div key={item.title} className="rounded-[1.75rem] border border-slate-200 bg-white/95 p-5 shadow-sm">
-                      <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-100 text-indigo-600">
+                    <div key={item.title} className="rounded-[1.75rem] border border-white/10 bg-white/8 p-5 shadow-[0_24px_80px_rgba(0,0,0,0.16)] backdrop-blur-2xl">
+                      <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-2xl bg-white/10 text-sky-200">
                         {item.icon}
                       </div>
-                      <h3 className="text-base font-extrabold text-slate-900">{item.title}</h3>
-                      <p className="mt-2 text-sm font-medium leading-6 text-slate-500">{item.text}</p>
+                      <h3 className="text-base font-extrabold text-white">{item.title}</h3>
+                      <p className="mt-2 text-sm font-medium leading-6 text-slate-300">{item.text}</p>
                     </div>
                   ))}
                 </aside>
@@ -198,17 +199,17 @@ export default function Dashboard() {
               transition={{ duration: 0.35 }}
               className="space-y-8"
             >
-              <section className="relative overflow-hidden rounded-[2rem] border border-slate-200 bg-white/95 p-6 shadow-sm md:p-8">
+              <section className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/8 p-6 shadow-[0_24px_80px_rgba(0,0,0,0.18)] backdrop-blur-2xl md:p-8">
                 <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-sky-400 via-indigo-500 to-emerald-400" />
                 <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
                   <div className="max-w-3xl">
-                    <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.22em] text-emerald-700">
+                    <div className="inline-flex items-center gap-2 rounded-full border border-emerald-300/20 bg-emerald-400/10 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.22em] text-emerald-200">
                       <BadgeCheck size={14} /> {searchParams.get('session') ? 'Saved Session Opened' : 'Analysis Complete'}
                     </div>
-                    <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-slate-900 md:text-4xl">
+                    <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-white md:text-4xl">
                       {searchParams.get('session') ? 'Your previous chat is open on the dashboard.' : 'Your study breakdown is ready.'}
                     </h1>
-                    <p className="mt-3 text-sm font-medium leading-6 text-slate-500 md:text-base">
+                    <p className="mt-3 text-sm font-medium leading-6 text-slate-300 md:text-base">
                       Review the structured explanation below, then continue the session with the tutor to summarize, clarify, or explore related questions.
                     </p>
                   </div>
@@ -224,7 +225,7 @@ export default function Dashboard() {
                   <div className="mt-5">
                     <Link
                       to={`/notes?mode=ai&session=${sessionId}`}
-                      className="inline-flex items-center gap-2 rounded-2xl border border-indigo-200 bg-indigo-50 px-4 py-3 text-sm font-bold text-indigo-700 transition-colors hover:bg-indigo-100"
+                      className="inline-flex items-center gap-2 rounded-2xl border border-sky-300/20 bg-sky-400/10 px-4 py-3 text-sm font-bold text-sky-100 transition-colors hover:bg-sky-400/15"
                     >
                       <Sparkles size={16} />
                       Generate Notes From This Analysis
@@ -234,10 +235,10 @@ export default function Dashboard() {
               </section>
 
               {sessionLoading ? (
-                <div className="rounded-[2rem] border border-slate-200 bg-white/95 p-10 shadow-sm">
+                <div className="rounded-[2rem] border border-white/10 bg-white/8 p-10 shadow-[0_24px_80px_rgba(0,0,0,0.18)] backdrop-blur-2xl">
                   <div className="flex flex-col items-center justify-center py-16">
                     <div className="h-8 w-8 animate-spin rounded-full border-2 border-indigo-500 border-t-transparent" />
-                    <p className="mt-4 text-sm font-medium text-slate-500">Loading saved session...</p>
+                    <p className="mt-4 text-sm font-medium text-slate-300">Loading saved session...</p>
                   </div>
                 </div>
               ) : (

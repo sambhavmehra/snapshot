@@ -1,9 +1,11 @@
 import React, { useContext, useState } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate, Link, Navigate } from 'react-router-dom';
-import { Zap, Mail, Lock, ArrowRight, Loader2, Eye, EyeOff, Sparkles, ShieldCheck } from 'lucide-react';
+import { Mail, Lock, ArrowRight, Loader2, Eye, EyeOff, ShieldCheck, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 import axios from 'axios';
+import BrandLogo from '../components/BrandLogo';
+import { API_BASE_URL } from '../config/api';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -24,7 +26,7 @@ export default function Login() {
     setError('');
 
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/login', { email, password });
+      const res = await axios.post(`${API_BASE_URL}/api/auth/login`, { email, password });
       login(res.data.token, res.data.user);
       navigate('/dashboard');
     } catch (err) {
@@ -35,47 +37,49 @@ export default function Login() {
   };
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[linear-gradient(135deg,#f8fafc_0%,#eef2ff_45%,#ffffff_100%)] font-sans">
+    <div className="relative min-h-screen overflow-hidden bg-[#07101d] text-white">
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute top-[-10%] right-[-5%] h-[34rem] w-[34rem] rounded-full bg-indigo-300/30 blur-3xl" />
-        <div className="absolute bottom-[-10%] left-[-5%] h-[28rem] w-[28rem] rounded-full bg-sky-200/40 blur-3xl" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,16,29,0.32)_0%,rgba(7,16,29,0.62)_38%,rgba(7,16,29,0.9)_100%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(56,189,248,0.18),transparent_28%)]" />
+        <div className="absolute top-[-18%] left-[-8%] h-[34rem] w-[34rem] rounded-full bg-sky-300/16 blur-3xl" />
+        <div className="absolute top-[8%] right-[-10%] h-[42rem] w-[42rem] rounded-full bg-blue-400/14 blur-3xl" />
+        <div className="absolute bottom-[-12%] left-[26%] h-[30rem] w-[30rem] rounded-full bg-cyan-300/10 blur-3xl" />
+        <div className="grid-noise absolute inset-0 opacity-25" />
       </div>
 
-      <div className="relative mx-auto grid min-h-screen max-w-7xl items-center gap-10 px-6 py-10 lg:grid-cols-[1.05fr_0.95fr]">
+      <div className="relative mx-auto grid min-h-screen max-w-7xl items-center gap-12 px-6 py-10 lg:grid-cols-[1.05fr_0.95fr]">
         <motion.div
-          initial={{ opacity: 0, x: -24 }}
+          initial={{ opacity: 0, x: -30 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.55 }}
           className="hidden lg:block"
         >
-          <Link to="/" className="inline-flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-900 text-white shadow-xl shadow-slate-900/20">
-              <Zap size={24} fill="currentColor" />
-            </div>
-            <span className="text-2xl font-extrabold tracking-tight text-slate-900">SnapStudy</span>
+          <Link to="/" className="inline-flex">
+            <BrandLogo size="lg" />
           </Link>
 
-          <div className="mt-16 max-w-xl">
-            <div className="inline-flex items-center gap-2 rounded-full border border-indigo-200 bg-white/80 px-4 py-2 text-xs font-bold uppercase tracking-[0.24em] text-indigo-700 shadow-sm">
-              <Sparkles size={14} /> AI study workspace
+          <div className="mt-16 max-w-2xl">
+            <div className="inline-flex items-center gap-2 rounded-full border border-sky-300/20 bg-white/8 px-4 py-2 text-xs font-black uppercase tracking-[0.26em] text-sky-200 backdrop-blur-xl">
+              <Sparkles size={14} /> Next-generation study OS
             </div>
-            <h1 className="mt-6 text-5xl font-extrabold leading-tight tracking-tight text-slate-900">
-              Sign in and pick up exactly where you left off.
+            <h1 className="mt-7 text-6xl font-black tracking-tight text-white">
+              Re-enter a workspace that already knows how you learn.
             </h1>
-            <p className="mt-5 text-lg font-medium leading-8 text-slate-600">
-              Your dashboard, uploads, and profile now feel more connected, so returning users can instantly recognize their workspace.
+            <p className="mt-6 max-w-xl text-lg font-medium leading-8 text-slate-300">
+              SnapStudy now feels like a polished visual intelligence platform with persistent notes, guided chat, and an AI tuned to your personal learning perspective.
             </p>
+
             <div className="mt-10 grid gap-4">
               {[
-                'See your user identity clearly on the dashboard.',
-                'Jump from sign-in to uploads without extra steps.',
-                'Keep your profile details visible and organized.',
+                'Open saved notes, previous analysis, and note chat from one place.',
+                'Use AI that follows your chosen perspective, tone, and response style.',
+                'Study inside a cleaner, faster, more animated workspace.',
               ].map((item) => (
-                <div key={item} className="flex items-center gap-3 rounded-2xl border border-white/80 bg-white/75 px-4 py-4 shadow-sm">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600">
+                <div key={item} className="flex items-center gap-4 rounded-[1.6rem] border border-white/10 bg-white/6 px-5 py-4 shadow-[0_18px_40px_rgba(15,23,42,0.18)] backdrop-blur-xl">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-[1rem] bg-white/10 text-sky-200">
                     <ShieldCheck size={18} />
                   </div>
-                  <p className="text-sm font-semibold text-slate-700">{item}</p>
+                  <p className="text-sm font-bold text-slate-100">{item}</p>
                 </div>
               ))}
             </div>
@@ -88,50 +92,39 @@ export default function Login() {
           transition={{ duration: 0.55 }}
           className="w-full max-w-xl justify-self-center"
         >
-          <div className="rounded-[2rem] border border-white/80 bg-white/85 p-8 shadow-2xl shadow-slate-900/10 backdrop-blur-xl md:p-10">
+          <div className="rounded-[2rem] border border-white/10 bg-white/8 p-8 shadow-[0_28px_90px_rgba(0,0,0,0.22)] backdrop-blur-2xl md:p-10">
             <div className="mb-8 text-center lg:text-left">
-              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-primary-500 to-indigo-600 text-white shadow-lg shadow-indigo-500/20 lg:mx-0">
-                <Zap size={28} fill="currentColor" />
+              <div className="mx-auto mb-5 lg:mx-0">
+                <BrandLogo size="md" withWordmark={false} />
               </div>
-              <h2 className="text-3xl font-extrabold text-slate-900">Welcome back</h2>
-              <p className="mt-2 text-sm font-medium leading-6 text-slate-500">
-                Sign in to continue your learning journey and access your personalized dashboard.
+              <h2 className="text-3xl font-black text-white">Welcome back</h2>
+              <p className="mt-2 text-sm font-medium leading-6 text-slate-300">
+                Sign in to continue with your visual study workspace.
               </p>
             </div>
 
-            {error && <div className="mb-5 rounded-2xl border border-red-200 bg-red-50 p-3 text-sm font-medium text-red-700">{error}</div>}
+            {error ? <div className="mb-5 rounded-2xl border border-rose-400/30 bg-rose-400/10 p-3 text-sm font-medium text-rose-100">{error}</div> : null}
 
             <form onSubmit={handleLogin} className="space-y-5">
-              <div>
-                <label className="mb-2 block text-sm font-bold text-slate-700">Email Address</label>
-                <div className="relative">
-                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
-                    <Mail className="h-5 w-5 text-slate-400" />
-                  </div>
-                  <input
-                    type="email"
-                    required
-                    className="block w-full rounded-2xl border border-slate-200 bg-slate-50/80 py-3.5 pl-11 pr-4 text-slate-900 outline-none transition-all focus:border-primary-500 focus:bg-white focus:ring-4 focus:ring-primary-500/10"
-                    placeholder="you@example.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                </div>
-              </div>
+              <InputField
+                label="Email Address"
+                icon={<Mail className="h-5 w-5 text-slate-400" />}
+                type="email"
+                value={email}
+                onChange={setEmail}
+                placeholder="you@example.com"
+              />
 
               <div>
-                <div className="mb-2 flex items-center justify-between">
-                  <label className="block text-sm font-bold text-slate-700">Password</label>
-                  <span className="text-xs font-semibold text-slate-400">Required</span>
-                </div>
+                <label className="mb-2 block text-sm font-black text-slate-200">Password</label>
                 <div className="relative">
                   <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
-                    <Lock className="h-5 w-5 text-slate-400" />
+                    <Lock className="h-5 w-5 text-slate-500" />
                   </div>
                   <input
                     type={showPassword ? 'text' : 'password'}
                     required
-                    className="block w-full rounded-2xl border border-slate-200 bg-slate-50/80 py-3.5 pl-11 pr-12 text-slate-900 outline-none transition-all focus:border-primary-500 focus:bg-white focus:ring-4 focus:ring-primary-500/10"
+                    className="block w-full rounded-2xl border border-white/10 bg-white/8 py-3.5 pl-11 pr-12 text-white outline-none transition-all placeholder:text-slate-400 focus:border-sky-400/40 focus:bg-white/10 focus:ring-4 focus:ring-sky-400/10"
                     placeholder="Enter your password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -139,7 +132,7 @@ export default function Login() {
                   <button
                     type="button"
                     onClick={() => setShowPassword((prev) => !prev)}
-                    className="absolute inset-y-0 right-0 flex items-center pr-4 text-slate-400 transition-colors hover:text-slate-700"
+                    className="absolute inset-y-0 right-0 flex items-center pr-4 text-slate-400 transition-colors hover:text-white"
                     aria-label={showPassword ? 'Hide password' : 'Show password'}
                   >
                     {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
@@ -150,17 +143,36 @@ export default function Login() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full rounded-2xl bg-slate-900 px-4 py-3.5 text-sm font-bold text-white shadow-lg shadow-slate-900/10 transition-colors hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-70"
+                className="w-full rounded-2xl bg-[linear-gradient(135deg,#081226_0%,#154cb5_54%,#36c3ff_100%)] px-4 py-3.5 text-sm font-black text-white shadow-[0_20px_40px_rgba(37,99,235,0.28)] transition-transform hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70"
               >
-                {loading ? <Loader2 className="mx-auto h-5 w-5 animate-spin" /> : <span>Sign In <ArrowRight className="ml-2 inline h-4 w-4" /></span>}
+                {loading ? <Loader2 className="mx-auto h-5 w-5 animate-spin" /> : <span>Enter Workspace <ArrowRight className="ml-2 inline h-4 w-4" /></span>}
               </button>
             </form>
 
-            <p className="mt-8 text-center text-sm font-medium text-slate-500">
-              Don&apos;t have an account? <Link to="/signup" className="font-bold text-primary-600 hover:text-primary-500">Create one</Link>
+            <p className="mt-8 text-center text-sm font-medium text-slate-300">
+              Don&apos;t have an account? <Link to="/signup" className="font-black text-sky-300 hover:text-sky-200">Create one</Link>
             </p>
           </div>
         </motion.div>
+      </div>
+    </div>
+  );
+}
+
+function InputField({ label, icon, type, value, onChange, placeholder }) {
+  return (
+    <div>
+      <label className="mb-2 block text-sm font-black text-slate-200">{label}</label>
+      <div className="relative">
+        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">{icon}</div>
+        <input
+          type={type}
+          required
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          className="block w-full rounded-2xl border border-white/10 bg-white/8 py-3.5 pl-11 pr-4 text-white outline-none transition-all placeholder:text-slate-400 focus:border-sky-400/40 focus:bg-white/10 focus:ring-4 focus:ring-sky-400/10"
+        />
       </div>
     </div>
   );

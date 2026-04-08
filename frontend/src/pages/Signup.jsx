@@ -1,9 +1,11 @@
 import React, { useContext, useState } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate, Link, Navigate } from 'react-router-dom';
-import { Zap, Mail, Lock, User, ArrowRight, Loader2, Eye, EyeOff, Sparkles, CheckCircle2 } from 'lucide-react';
+import { Mail, Lock, User, ArrowRight, Loader2, Eye, EyeOff, CheckCircle2, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 import axios from 'axios';
+import BrandLogo from '../components/BrandLogo';
+import { API_BASE_URL } from '../config/api';
 
 export default function Signup() {
   const [username, setUsername] = useState('');
@@ -33,7 +35,7 @@ export default function Signup() {
     }
 
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/signup', { username, email, password });
+      const res = await axios.post(`${API_BASE_URL}/api/auth/signup`, { username, email, password });
       login(res.data.token, res.data.user);
       navigate('/dashboard');
     } catch (err) {
@@ -44,174 +46,160 @@ export default function Signup() {
   };
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[linear-gradient(135deg,#ffffff_0%,#eff6ff_40%,#eef2ff_100%)] font-sans">
+    <div className="relative min-h-screen overflow-hidden bg-[#07101d] text-white">
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute top-[-10%] left-[-5%] h-[34rem] w-[34rem] rounded-full bg-indigo-300/25 blur-3xl" />
-        <div className="absolute bottom-[-10%] right-[-5%] h-[30rem] w-[30rem] rounded-full bg-cyan-200/35 blur-3xl" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,16,29,0.32)_0%,rgba(7,16,29,0.62)_38%,rgba(7,16,29,0.9)_100%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(56,189,248,0.18),transparent_28%)]" />
+        <div className="absolute top-[-18%] left-[-8%] h-[34rem] w-[34rem] rounded-full bg-sky-300/16 blur-3xl" />
+        <div className="absolute top-[8%] right-[-10%] h-[42rem] w-[42rem] rounded-full bg-blue-400/14 blur-3xl" />
+        <div className="absolute bottom-[-12%] left-[26%] h-[30rem] w-[30rem] rounded-full bg-cyan-300/10 blur-3xl" />
+        <div className="grid-noise absolute inset-0 opacity-25" />
       </div>
 
-      <div className="relative mx-auto grid min-h-screen max-w-7xl items-center gap-10 px-6 py-10 lg:grid-cols-[0.95fr_1.05fr]">
+      <div className="relative mx-auto grid min-h-screen max-w-7xl items-center gap-12 px-6 py-10 lg:grid-cols-[0.94fr_1.06fr]">
         <motion.div
-          initial={{ opacity: 0, x: -24 }}
-          animate={{ opacity: 1, x: 0 }}
+          initial={{ opacity: 0, y: 22 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.55 }}
           className="w-full max-w-xl justify-self-center lg:order-2"
         >
-          <div className="rounded-[2rem] border border-white/80 bg-white/85 p-8 shadow-2xl shadow-indigo-900/10 backdrop-blur-xl md:p-10">
+          <div className="rounded-[2rem] border border-white/10 bg-white/8 p-8 shadow-[0_28px_90px_rgba(0,0,0,0.22)] backdrop-blur-2xl md:p-10">
             <div className="mb-8 text-center lg:text-left">
-              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 to-sky-500 text-white shadow-lg shadow-indigo-500/20 lg:mx-0">
-                <Zap size={28} fill="currentColor" />
+              <div className="mx-auto mb-5 lg:mx-0">
+                <BrandLogo size="md" withWordmark={false} />
               </div>
-              <h1 className="text-3xl font-extrabold text-slate-900">Create your account</h1>
-              <p className="mt-2 text-sm font-medium leading-6 text-slate-500">
-                Join SnapStudy to get a named workspace, profile page, and a more personalized dashboard.
+              <h1 className="text-3xl font-black text-white">Create your account</h1>
+              <p className="mt-2 text-sm font-medium leading-6 text-slate-300">
+                Launch a personalized study workspace built around notes, chat, and visual understanding.
               </p>
             </div>
 
-            {error && <div className="mb-5 rounded-2xl border border-red-200 bg-red-50 p-3 text-sm font-medium text-red-700">{error}</div>}
+            {error ? <div className="mb-5 rounded-2xl border border-rose-400/30 bg-rose-400/10 p-3 text-sm font-medium text-rose-100">{error}</div> : null}
 
             <form onSubmit={handleSignup} className="space-y-4">
-              <div>
-                <label className="mb-2 block text-sm font-bold text-slate-700">Username</label>
-                <div className="relative">
-                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
-                    <User className="h-5 w-5 text-slate-400" />
-                  </div>
-                  <input
-                    type="text"
-                    required
-                    minLength={3}
-                    className="block w-full rounded-2xl border border-slate-200 bg-slate-50/80 py-3.5 pl-11 pr-4 text-slate-900 outline-none transition-all focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10"
-                    placeholder="johndoe"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                  />
-                </div>
-              </div>
+              <InputField label="Username" icon={<User className="h-5 w-5 text-slate-400" />} type="text" value={username} onChange={setUsername} placeholder="johndoe" minLength={3} />
+              <InputField label="Email Address" icon={<Mail className="h-5 w-5 text-slate-400" />} type="email" value={email} onChange={setEmail} placeholder="you@example.com" />
 
-              <div>
-                <label className="mb-2 block text-sm font-bold text-slate-700">Email Address</label>
-                <div className="relative">
-                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
-                    <Mail className="h-5 w-5 text-slate-400" />
-                  </div>
-                  <input
-                    type="email"
-                    required
-                    className="block w-full rounded-2xl border border-slate-200 bg-slate-50/80 py-3.5 pl-11 pr-4 text-slate-900 outline-none transition-all focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10"
-                    placeholder="you@example.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                </div>
-              </div>
+              <PasswordField
+                label="Password"
+                value={password}
+                onChange={setPassword}
+                show={showPassword}
+                onToggle={() => setShowPassword((prev) => !prev)}
+                placeholder="Create a password"
+              />
 
-              <div>
-                <label className="mb-2 block text-sm font-bold text-slate-700">Password</label>
-                <div className="relative">
-                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
-                    <Lock className="h-5 w-5 text-slate-400" />
-                  </div>
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    required
-                    minLength={6}
-                    className="block w-full rounded-2xl border border-slate-200 bg-slate-50/80 py-3.5 pl-11 pr-12 text-slate-900 outline-none transition-all focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10"
-                    placeholder="Create a password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword((prev) => !prev)}
-                    className="absolute inset-y-0 right-0 flex items-center pr-4 text-slate-400 transition-colors hover:text-slate-700"
-                    aria-label={showPassword ? 'Hide password' : 'Show password'}
-                  >
-                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                  </button>
-                </div>
-              </div>
-
-              <div>
-                <label className="mb-2 block text-sm font-bold text-slate-700">Confirm Password</label>
-                <div className="relative">
-                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
-                    <Lock className="h-5 w-5 text-slate-400" />
-                  </div>
-                  <input
-                    type={showConfirmPassword ? 'text' : 'password'}
-                    required
-                    minLength={6}
-                    className="block w-full rounded-2xl border border-slate-200 bg-slate-50/80 py-3.5 pl-11 pr-12 text-slate-900 outline-none transition-all focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10"
-                    placeholder="Repeat your password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowConfirmPassword((prev) => !prev)}
-                    className="absolute inset-y-0 right-0 flex items-center pr-4 text-slate-400 transition-colors hover:text-slate-700"
-                    aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
-                  >
-                    {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                  </button>
-                </div>
-              </div>
+              <PasswordField
+                label="Confirm Password"
+                value={confirmPassword}
+                onChange={setConfirmPassword}
+                show={showConfirmPassword}
+                onToggle={() => setShowConfirmPassword((prev) => !prev)}
+                placeholder="Repeat your password"
+              />
 
               <button
                 type="submit"
                 disabled={loading}
-                className="mt-2 w-full rounded-2xl bg-indigo-600 px-4 py-3.5 text-sm font-bold text-white shadow-lg shadow-indigo-600/20 transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-70"
+                className="mt-2 w-full rounded-2xl bg-[linear-gradient(135deg,#081226_0%,#154cb5_54%,#36c3ff_100%)] px-4 py-3.5 text-sm font-black text-white shadow-[0_20px_40px_rgba(37,99,235,0.28)] transition-transform hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70"
               >
-                {loading ? <Loader2 className="mx-auto h-5 w-5 animate-spin" /> : <span>Start Learning <ArrowRight className="ml-2 inline h-4 w-4" /></span>}
+                {loading ? <Loader2 className="mx-auto h-5 w-5 animate-spin" /> : <span>Create Workspace <ArrowRight className="ml-2 inline h-4 w-4" /></span>}
               </button>
             </form>
 
-            <p className="mt-8 text-center text-sm font-medium text-slate-500">
-              Already have an account? <Link to="/login" className="font-bold text-indigo-600 hover:text-indigo-500">Sign in</Link>
+            <p className="mt-8 text-center text-sm font-medium text-slate-300">
+              Already have an account? <Link to="/login" className="font-black text-sky-300 hover:text-sky-200">Sign in</Link>
             </p>
           </div>
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, x: 24 }}
+          initial={{ opacity: 0, x: 28 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.55 }}
           className="hidden lg:block lg:order-1"
         >
-          <Link to="/" className="inline-flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-900 text-white shadow-xl shadow-slate-900/20">
-              <Zap size={24} fill="currentColor" />
-            </div>
-            <span className="text-2xl font-extrabold tracking-tight text-slate-900">SnapStudy</span>
+          <Link to="/" className="inline-flex">
+            <BrandLogo size="lg" />
           </Link>
 
-          <div className="mt-16 max-w-xl">
-            <div className="inline-flex items-center gap-2 rounded-full border border-indigo-200 bg-white/80 px-4 py-2 text-xs font-bold uppercase tracking-[0.24em] text-indigo-700 shadow-sm">
-              <Sparkles size={14} /> Personalized onboarding
+          <div className="mt-16 max-w-2xl">
+            <div className="inline-flex items-center gap-2 rounded-full border border-sky-300/20 bg-white/8 px-4 py-2 text-xs font-black uppercase tracking-[0.26em] text-sky-200 backdrop-blur-xl">
+              <Sparkles size={14} /> Adaptive onboarding
             </div>
-            <h2 className="mt-6 text-5xl font-extrabold leading-tight tracking-tight text-slate-900">
-              Build a workspace that actually feels like yours.
+            <h2 className="mt-7 text-6xl font-black tracking-tight text-white">
+              Start with a smarter study identity from day one.
             </h2>
-            <p className="mt-5 text-lg font-medium leading-8 text-slate-600">
-              New accounts now flow more cleanly into the dashboard and profile experience, with your username visible where it matters.
+            <p className="mt-6 max-w-xl text-lg font-medium leading-8 text-slate-300">
+              Your dashboard, AI settings, profile, library, and notes workspace now feel like parts of one premium learning platform.
             </p>
+
             <div className="mt-10 space-y-4">
               {[
-                'Create a username that appears on your dashboard greeting.',
-                'See your account details organized on the profile page.',
-                'Move straight from sign-up into uploading your first study image.',
+                'Set up a workspace tied to your name and account.',
+                'Generate AI notes, upload PDFs, and continue note chat later.',
+                'Tune the assistant perspective so responses match how you learn best.',
               ].map((item) => (
-                <div key={item} className="flex items-center gap-3 rounded-2xl border border-white/80 bg-white/75 px-4 py-4 shadow-sm">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600">
+                <div key={item} className="flex items-center gap-4 rounded-[1.6rem] border border-white/10 bg-white/6 px-5 py-4 shadow-[0_18px_40px_rgba(15,23,42,0.18)] backdrop-blur-xl">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-[1rem] bg-white/10 text-sky-200">
                     <CheckCircle2 size={18} />
                   </div>
-                  <p className="text-sm font-semibold text-slate-700">{item}</p>
+                  <p className="text-sm font-bold text-slate-100">{item}</p>
                 </div>
               ))}
             </div>
           </div>
         </motion.div>
+      </div>
+    </div>
+  );
+}
+
+function InputField({ label, icon, type, value, onChange, placeholder, minLength }) {
+  return (
+    <div>
+      <label className="mb-2 block text-sm font-black text-slate-200">{label}</label>
+      <div className="relative">
+        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">{icon}</div>
+        <input
+          type={type}
+          required
+          minLength={minLength}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          className="block w-full rounded-2xl border border-white/10 bg-white/8 py-3.5 pl-11 pr-4 text-white outline-none transition-all placeholder:text-slate-400 focus:border-sky-400/40 focus:bg-white/10 focus:ring-4 focus:ring-sky-400/10"
+        />
+      </div>
+    </div>
+  );
+}
+
+function PasswordField({ label, value, onChange, show, onToggle, placeholder }) {
+  return (
+    <div>
+      <label className="mb-2 block text-sm font-black text-slate-200">{label}</label>
+      <div className="relative">
+        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
+          <Lock className="h-5 w-5 text-slate-400" />
+        </div>
+        <input
+          type={show ? 'text' : 'password'}
+          required
+          minLength={6}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          className="block w-full rounded-2xl border border-white/10 bg-white/8 py-3.5 pl-11 pr-12 text-white outline-none transition-all placeholder:text-slate-400 focus:border-sky-400/40 focus:bg-white/10 focus:ring-4 focus:ring-sky-400/10"
+        />
+        <button
+          type="button"
+          onClick={onToggle}
+          className="absolute inset-y-0 right-0 flex items-center pr-4 text-slate-400 transition-colors hover:text-white"
+          aria-label={show ? 'Hide password' : 'Show password'}
+        >
+          {show ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+        </button>
       </div>
     </div>
   );
