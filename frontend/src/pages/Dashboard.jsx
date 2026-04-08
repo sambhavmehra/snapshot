@@ -16,7 +16,6 @@ import Layout from '../components/Layout';
 import ImageUploader from '../components/ImageUploader';
 import AnalysisResult from '../components/AnalysisResult';
 import ChatInterface from '../components/ChatInterface';
-import { API_BASE_URL } from '../config/api';
 
 const quickStats = [
   {
@@ -73,7 +72,7 @@ export default function Dashboard() {
     const fetchSession = async () => {
       setSessionLoading(true);
       try {
-        const res = await axios.get(`${API_BASE_URL}/api/sessions/${requestedSessionId}`, {
+        const res = await axios.get(`http://localhost:5000/api/sessions/${requestedSessionId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -107,7 +106,7 @@ export default function Dashboard() {
     formData.append('image', file);
 
     try {
-      const res = await axios.post(`${API_BASE_URL}/api/analyze`, formData, {
+      const res = await axios.post('http://localhost:5000/api/analyze', formData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

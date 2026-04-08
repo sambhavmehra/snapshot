@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import Layout from '../components/Layout';
 import { BookOpen, Clock3, FolderOpen, Layers3, Sparkles } from 'lucide-react';
-import { API_BASE_URL } from '../config/api';
 
 export default function Library() {
   const [sessions, setSessions] = useState([]);
@@ -14,7 +13,7 @@ export default function Library() {
   useEffect(() => {
     const fetchSessions = async () => {
       try {
-        const res = await axios.get(`${API_BASE_URL}/api/sessions`, {
+        const res = await axios.get('http://localhost:5000/api/sessions', {
           headers: { Authorization: `Bearer ${token}` },
         });
         const nextSessions = res.data.sessions || [];

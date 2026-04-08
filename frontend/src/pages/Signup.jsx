@@ -5,7 +5,6 @@ import { Mail, Lock, User, ArrowRight, Loader2, Eye, EyeOff, CheckCircle2, Spark
 import { motion } from 'framer-motion';
 import axios from 'axios';
 import BrandLogo from '../components/BrandLogo';
-import { API_BASE_URL } from '../config/api';
 
 export default function Signup() {
   const [username, setUsername] = useState('');
@@ -35,7 +34,7 @@ export default function Signup() {
     }
 
     try {
-      const res = await axios.post(`${API_BASE_URL}/api/auth/signup`, { username, email, password });
+      const res = await axios.post('http://localhost:5000/api/auth/signup', { username, email, password });
       login(res.data.token, res.data.user);
       navigate('/dashboard');
     } catch (err) {

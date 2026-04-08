@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
 import ReactMarkdown from 'react-markdown';
-import { API_BASE_URL } from '../config/api';
 
 const defaultAssistantMessage = {
   role: 'assistant',
@@ -43,7 +42,7 @@ export default function ChatInterface({
 
     try {
       const response = await axios.post(
-        `${API_BASE_URL}/api/chat`,
+        'http://localhost:5000/api/chat',
         {
           messages: nextMessages,
           sessionId,

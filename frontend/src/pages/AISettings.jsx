@@ -3,7 +3,6 @@ import axios from 'axios';
 import { Bot, ChevronDown, Save, SlidersHorizontal } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import Layout from '../components/Layout';
-import { API_BASE_URL } from '../config/api';
 
 const presets = {
   perspective: ['student', 'beginner', 'exam candidate', 'teacher assistant', 'developer', 'cybersecurity learner'],
@@ -27,7 +26,7 @@ export default function AISettings() {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const res = await axios.get(`${API_BASE_URL}/api/ai-settings`, {
+        const res = await axios.get('http://localhost:5000/api/ai-settings', {
           headers: { Authorization: `Bearer ${token}` },
         });
         setForm(res.data.settings);
@@ -49,7 +48,7 @@ export default function AISettings() {
   const saveSettings = async () => {
     setSaving(true);
     try {
-      const res = await axios.put(`${API_BASE_URL}/api/ai-settings`, form, {
+      const res = await axios.put('http://localhost:5000/api/ai-settings', form, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setForm(res.data.settings);

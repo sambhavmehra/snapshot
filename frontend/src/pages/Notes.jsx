@@ -6,7 +6,6 @@ import ReactMarkdown from 'react-markdown';
 import { BadgeCheck, BookText, Bot, FileText, FolderOpen, Loader2, MessageSquareText, Search, Send, Sparkles, Trash2, Upload, WandSparkles, X } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import Layout from '../components/Layout';
-import { API_BASE_URL } from '../config/api';
 
 const modeConfig = {
   all: { label: 'All Notes', description: 'Browse every saved note from your workspace in one place.' },
@@ -39,8 +38,8 @@ export default function Notes() {
     const fetchWorkspaceData = async () => {
       try {
         const [notesRes, sessionsRes] = await Promise.all([
-          axios.get(`${API_BASE_URL}/api/workspace-notes`, { headers: { Authorization: `Bearer ${token}` } }),
-          axios.get(`${API_BASE_URL}/api/sessions`, { headers: { Authorization: `Bearer ${token}` } }),
+          axios.get('http://localhost:5000/api/workspace-notes', { headers: { Authorization: `Bearer ${token}` } }),
+          axios.get('http://localhost:5000/api/sessions', { headers: { Authorization: `Bearer ${token}` } }),
         ]);
         const nextNotes = notesRes.data.notes || [];
         setNotes(nextNotes);
@@ -68,7 +67,7 @@ export default function Notes() {
     }
     const fetchNoteDetail = async () => {
       try {
-        const res = await axios.get(`${API_BASE_URL}/api/workspace-notes/${selectedNoteId}`, {
+        const res = await axios.get(`http://localhost:5000/api/workspace-notes/${selectedNoteId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const note = res.data.note;
@@ -115,7 +114,7 @@ export default function Notes() {
   const createManualNote = async () => {
     setSaving(true);
     try {
-      const res = await axios.post(`${API_BASE_URL}/api/workspace-notes`, {
+      const res = await axios.post('http://localhost:5000/api/workspace-notes', {
         type: 'manual', title: 'Untitled Manual Note', topic: '', content: '',
       }, { headers: { Authorization: `Bearer ${token}` } });
       syncNote(res.data.note);
@@ -131,7 +130,7 @@ export default function Notes() {
     if (!selectedNote || selectedNote.type !== 'manual') return;
     setSaving(true);
     try {
-      const res = await axios.put(`${API_BASE_URL}/api/workspace-notes/${selectedNote.id}`, manualDraft, {
+      const res = await axios.put(`http://localhost:5000/api/workspace-notes/${selectedNote.id}`, manualDraft, {
         headers: { Authorization: `Bearer ${token}` },
       });
       syncNote(res.data.note);
@@ -146,7 +145,7 @@ export default function Notes() {
     if (!aiDraft.topic.trim() && !aiDraft.sessionId) return;
     setGenerating(true);
     try {
-      const res = await axios.post(`${API_BASE_URL}/api/workspace-notes/generate`, {
+      const res = await axios.post('http://localhost:5000/api/workspace-notes/generate', {
         topic: aiDraft.topic,
         sessionId: aiDraft.sessionId ? Number(aiDraft.sessionId) : null,
       }, { headers: { Authorization: `Bearer ${token}` } });
@@ -163,7 +162,7 @@ export default function Notes() {
     if (!selectedNote || selectedNote.type !== 'ai') return;
     setSaving(true);
     try {
-      const res = await axios.put(`${API_BASE_URL}/api/workspace-notes/${selectedNote.id}`, {
+      const res = await axios.put(`http://localhost:5000/api/workspace-notes/${selectedNote.id}`, {
         title: selectedNote.title,
         topic: aiDraft.topic,
         content: selectedNote.content,
@@ -185,7 +184,7 @@ export default function Notes() {
       formData.append('file', uploadDraft.file);
       formData.append('title', uploadDraft.title);
       formData.append('topic', uploadDraft.topic);
-      const res = await axios.post(`${API_BASE_URL}/api/workspace-notes/upload`, formData, {
+      const res = await axios.post('http://localhost:5000/api/workspace-notes/upload', formData, {
         headers: { Authorization: `Bearer ${token}` },
       });
       syncNote(res.data.note);
@@ -203,7 +202,7 @@ export default function Notes() {
     if (!selectedNote || selectedNote.type !== 'upload') return;
     setSaving(true);
     try {
-      const res = await axios.put(`${API_BASE_URL}/api/workspace-notes/${selectedNote.id}`, {
+      const res = await axios.put(`http://localhost:5000/api/workspace-notes/${selectedNote.id}`, {
         title: uploadDraft.title,
         topic: uploadDraft.topic,
         content: selectedNote.content,
@@ -219,7 +218,7 @@ export default function Notes() {
   const deleteSelectedNote = async () => {
     if (!selectedNote) return;
     try {
-      await axios.delete(`${API_BASE_URL}/api/workspace-notes/${selectedNote.id}`, {
+      await axios.delete(`http://localhost:5000/api/workspace-notes/${selectedNote.id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setNotes((prev) => prev.filter((note) => note.id !== selectedNote.id));
@@ -608,7 +607,7 @@ function NoteChatPanel({ note, token, initialMessages, compact = false, onNoteUp
     setInput('');
     setIsTyping(true);
     try {
-      const res = await axios.post(`${API_BASE_URL}/api/workspace-notes/${note.id}/chat`, { messages: nextMessages }, {
+      const res = await axios.post(`http://localhost:5000/api/workspace-notes/${note.id}/chat`, { messages: nextMessages }, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const assistantMessages = [{ role: 'assistant', content: res.data.reply }];
