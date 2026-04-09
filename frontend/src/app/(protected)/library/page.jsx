@@ -1,8 +1,9 @@
+"use client";
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext';
-import Layout from '../components/Layout';
+import Link from 'next/link';
+import { AuthContext } from '@/context/AuthContext';
+import Layout from '@/components/Layout';
 import { BookOpen, Clock3, FolderOpen, Layers3, Sparkles } from 'lucide-react';
 
 export default function Library() {
@@ -97,7 +98,7 @@ export default function Library() {
                   </p>
                 </div>
                 <Link
-                  to={`/notes?mode=ai&session=${item.id}`}
+                  href={`/notes?mode=ai&session=${item.id}`}
                   className="mt-6 inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-slate-800"
                 >
                   <Sparkles size={16} />

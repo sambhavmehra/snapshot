@@ -1,6 +1,8 @@
+"use client";
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { AuthContext } from '@/context/AuthContext';
 import { BookOpen, NotebookPen, Settings, LogOut, LayoutDashboard, SlidersHorizontal } from 'lucide-react';
 import { motion } from 'framer-motion';
 import BrandLogo from './BrandLogo';
@@ -10,7 +12,7 @@ export default function Layout({ children }) {
   const userInitial = user?.username?.charAt(0)?.toUpperCase() || 'S';
 
   return (
-    <div className="app-shell relative flex min-h-screen w-full overflow-hidden bg-[#07101d] text-white">
+    <div className="relative flex h-screen w-full overflow-hidden bg-[#07101d] text-white">
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,16,29,0.32)_0%,rgba(7,16,29,0.62)_38%,rgba(7,16,29,0.9)_100%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(56,189,248,0.18),transparent_28%)]" />
@@ -67,20 +69,20 @@ export default function Layout({ children }) {
         initial={{ opacity: 0, y: 18 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.55, delay: 0.12, ease: 'easeOut' }}
-        className="relative flex min-h-screen flex-1 flex-col overflow-hidden"
+        className="relative flex flex-1 flex-col overflow-hidden"
       >
         <div className="z-20 flex items-center justify-between border-b border-white/10 bg-white/8 px-5 py-4 backdrop-blur-xl md:hidden">
           <BrandLogo size="sm" />
           <Link
-            to="/profile"
+            href="/profile"
             className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[1.1rem] border border-white/10 bg-white/10 text-sm font-black text-white shadow-sm"
           >
             {userInitial}
           </Link>
         </div>
 
-        <div className="z-10 flex-1 overflow-y-auto px-5 py-6 md:px-8 md:py-8">
-          <div className="mx-auto h-full w-full max-w-[92rem]">{children}</div>
+        <div className="z-10 flex-1 overflow-y-auto bg-[#07101d] px-5 py-6 md:px-8 md:py-8">
+          <div className="mx-auto w-full max-w-[92rem]">{children}</div>
         </div>
       </motion.main>
     </div>
@@ -88,12 +90,12 @@ export default function Layout({ children }) {
 }
 
 function NavItem({ icon, label, to }) {
-  const location = useLocation();
-  const active = location.pathname === to;
+  const pathname = usePathname();
+  const active = pathname === to;
 
   return (
     <Link
-      to={to}
+      href={to}
       className={`flex w-full items-center gap-3 rounded-[1.2rem] px-4 py-3 text-sm font-bold transition-all duration-200 ${
         active
           ? 'bg-[linear-gradient(135deg,#0f172a_0%,#1447b8_58%,#38bdf8_100%)] text-white shadow-[0_18px_38px_rgba(29,78,216,0.24)]'

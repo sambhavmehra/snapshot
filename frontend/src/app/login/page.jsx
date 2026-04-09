@@ -1,10 +1,12 @@
-import React, { useContext, useState } from 'react';
-import { AuthContext } from '../context/AuthContext';
-import { useNavigate, Link, Navigate } from 'react-router-dom';
+"use client";
+import React, { useContext, useEffect, useState } from 'react';
+import { AuthContext } from '@/context/AuthContext';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { Mail, Lock, ArrowRight, Loader2, Eye, EyeOff, ShieldCheck, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 import axios from 'axios';
-import BrandLogo from '../components/BrandLogo';
+import BrandLogo from '@/components/BrandLogo';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -13,11 +15,15 @@ export default function Login() {
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const { login, isAuthenticated } = useContext(AuthContext);
-  const navigate = useNavigate();
+  const router = useRouter();
 
-  if (isAuthenticated) {
-    return <Navigate to="/dashboard" replace />;
-  }
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.replace('/dashboard');
+    }
+  }, [isAuthenticated, router]);
+
+  if (isAuthenticated) return null;
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -27,7 +33,7 @@ export default function Login() {
     try {
       const res = await axios.post('http://localhost:5000/api/auth/login', { email, password });
       login(res.data.token, res.data.user);
-      navigate('/dashboard');
+      router.push('/dashboard');
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to login');
     } finally {
@@ -53,7 +59,7 @@ export default function Login() {
           transition={{ duration: 0.55 }}
           className="hidden lg:block"
         >
-          <Link to="/" className="inline-flex">
+          <Link href="/" className="inline-flex">
             <BrandLogo size="lg" />
           </Link>
 
@@ -149,7 +155,7 @@ export default function Login() {
             </form>
 
             <p className="mt-8 text-center text-sm font-medium text-slate-300">
-              Don&apos;t have an account? <Link to="/signup" className="font-black text-sky-300 hover:text-sky-200">Create one</Link>
+              Don&apos;t have an account? <Link href="/signup" className="font-black text-sky-300 hover:text-sky-200">Create one</Link>
             </p>
           </div>
         </motion.div>

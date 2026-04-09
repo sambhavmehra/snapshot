@@ -1,10 +1,12 @@
-import React, { useContext, useState } from 'react';
-import { AuthContext } from '../context/AuthContext';
-import { useNavigate, Link, Navigate } from 'react-router-dom';
+"use client";
+import React, { useContext, useEffect, useState } from 'react';
+import { AuthContext } from '@/context/AuthContext';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { Mail, Lock, User, ArrowRight, Loader2, Eye, EyeOff, CheckCircle2, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 import axios from 'axios';
-import BrandLogo from '../components/BrandLogo';
+import BrandLogo from '@/components/BrandLogo';
 
 export default function Signup() {
   const [username, setUsername] = useState('');
@@ -16,11 +18,15 @@ export default function Signup() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const { login, isAuthenticated } = useContext(AuthContext);
-  const navigate = useNavigate();
+  const router = useRouter();
 
-  if (isAuthenticated) {
-    return <Navigate to="/dashboard" replace />;
-  }
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.replace('/dashboard');
+    }
+  }, [isAuthenticated, router]);
+
+  if (isAuthenticated) return null;
 
   const handleSignup = async (e) => {
     e.preventDefault();
@@ -36,7 +42,7 @@ export default function Signup() {
     try {
       const res = await axios.post('http://localhost:5000/api/auth/signup', { username, email, password });
       login(res.data.token, res.data.user);
-      navigate('/dashboard');
+      router.push('/dashboard');
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to create account');
     } finally {
@@ -107,7 +113,7 @@ export default function Signup() {
             </form>
 
             <p className="mt-8 text-center text-sm font-medium text-slate-300">
-              Already have an account? <Link to="/login" className="font-black text-sky-300 hover:text-sky-200">Sign in</Link>
+              Already have an account? <Link href="/login" className="font-black text-sky-300 hover:text-sky-200">Sign in</Link>
             </p>
           </div>
         </motion.div>
@@ -118,7 +124,7 @@ export default function Signup() {
           transition={{ duration: 0.55 }}
           className="hidden lg:block lg:order-1"
         >
-          <Link to="/" className="inline-flex">
+          <Link href="/" className="inline-flex">
             <BrandLogo size="lg" />
           </Link>
 

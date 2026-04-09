@@ -1,18 +1,27 @@
+"use client";
 import React, { createContext, useEffect, useState } from 'react';
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const storedUser = localStorage.getItem('user');
-  const [token, setToken] = useState(localStorage.getItem('token') || null);
-  const [user, setUser] = useState(() => {
-    try {
-      return storedUser ? JSON.parse(storedUser) : null;
-    } catch (error) {
-      localStorage.removeItem('user');
-      return null;
+  const [token, setToken] = useState(null);
+  const [user, setUser] = useState(null);
+  const [isReady, setIsReady] = useState(false);
+
+  useEffect(() => {
+    const storedToken = localStorage.getItem('token');
+    if (storedToken) setToken(storedToken);
+
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (e) {
+        localStorage.removeItem('user');
+      }
     }
-  });
+    setIsReady(true);
+  }, []);
 
   const login = (jwtToken, userData) => {
     setToken(jwtToken);
@@ -36,7 +45,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider value={{ token, user, login, logout, isAuthenticated: !!token }}>
-      {children}
+      {isReady ? children : null}
     </AuthContext.Provider>
   );
 };

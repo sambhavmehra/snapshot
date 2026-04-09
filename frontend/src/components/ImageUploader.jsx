@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from 'react';
 import { UploadCloud, Image as ImageIcon, CheckCircle2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';

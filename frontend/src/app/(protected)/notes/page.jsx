@@ -1,11 +1,12 @@
+"use client";
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import axios from 'axios';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 import { BadgeCheck, BookText, Bot, FileText, FolderOpen, Loader2, MessageSquareText, Search, Send, Sparkles, Trash2, Upload, WandSparkles, X } from 'lucide-react';
-import { AuthContext } from '../context/AuthContext';
-import Layout from '../components/Layout';
+import { AuthContext } from '@/context/AuthContext';
+import Layout from '@/components/Layout';
 
 const modeConfig = {
   all: { label: 'All Notes', description: 'Browse every saved note from your workspace in one place.' },
@@ -16,7 +17,8 @@ const modeConfig = {
 
 export default function Notes() {
   const { token } = useContext(AuthContext);
-  const [searchParams, setSearchParams] = useSearchParams();
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const [notes, setNotes] = useState([]);
   const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -83,12 +85,13 @@ export default function Notes() {
     fetchNoteDetail();
   }, [selectedNoteId, token]);
 
+  // Sync URL with current state using router.replace (Next.js compatible)
   useEffect(() => {
-    const nextParams = {};
-    if (activeMode) nextParams.mode = activeMode;
-    if (selectedNoteId) nextParams.note = String(selectedNoteId);
-    if (!selectedNoteId && searchParams.get('session')) nextParams.session = searchParams.get('session');
-    setSearchParams(nextParams, { replace: true });
+    const params = new URLSearchParams();
+    if (activeMode) params.set('mode', activeMode);
+    if (selectedNoteId) params.set('note', String(selectedNoteId));
+    if (!selectedNoteId && searchParams.get('session')) params.set('session', searchParams.get('session'));
+    router.replace(`/notes?${params.toString()}`);
   }, [activeMode, selectedNoteId]);
 
   const filteredNotes = useMemo(() => {
@@ -333,7 +336,7 @@ export default function Notes() {
                         }}
                         className={`rounded-2xl px-3 py-2.5 text-[11px] font-bold uppercase tracking-[0.18em] transition-colors ${activeMode === mode ? 'bg-slate-900 text-white' : 'border border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100'}`}
                       >
-                        {mode === 'all' ? 'all' : mode}
+                        {mode}
                       </button>
                     ))}
                   </div>
@@ -421,107 +424,131 @@ export default function Notes() {
                   {activeMode === 'manual' ? (
                     <ModeShell>
                       <div className="rounded-[1.75rem] border border-slate-200 bg-slate-50/70 p-6">
-                          <div className="mb-4 flex items-center justify-between">
-                            <h3 className="text-lg font-extrabold text-slate-900">Manual Note Editor</h3>
-                            <div className="flex flex-wrap gap-3">
+                        <div className="mb-4 flex items-center justify-between">
+                          <h3 className="text-lg font-extrabold text-slate-900">Manual Note Editor</h3>
+                          <div className="flex flex-wrap gap-3">
                             {!selectedNote || selectedNote.type !== 'manual' ? (
                               <button onClick={createManualNote} disabled={saving} className="rounded-2xl bg-slate-900 px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-slate-800">{saving ? 'Creating...' : 'New Manual Note'}</button>
                             ) : (
                               <button onClick={saveManualNote} disabled={saving} className="rounded-2xl bg-indigo-600 px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-indigo-700">{saving ? 'Saving...' : 'Save Note'}</button>
                             )}
-                              <button
-                                onClick={() => setChatOpen(true)}
-                                disabled={!selectedNote || selectedNote.type !== 'manual'}
-                                className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
-                              >
-                                <MessageSquareText size={16} /> Chat with AI
-                              </button>
-                            </div>
+                            <button
+                              onClick={() => setChatOpen(true)}
+                              disabled={!selectedNote || selectedNote.type !== 'manual'}
+                              className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
+                            >
+                              <MessageSquareText size={16} /> Chat with AI
+                            </button>
                           </div>
-                          {selectedNote && selectedNote.type === 'manual' ? (
-                            <div className="space-y-4">
-                              <input type="text" value={manualDraft.title} onChange={(e) => setManualDraft((prev) => ({ ...prev, title: e.target.value }))} placeholder="Note title" className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition-all focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10" />
-                              <input type="text" value={manualDraft.topic} onChange={(e) => setManualDraft((prev) => ({ ...prev, topic: e.target.value }))} placeholder="Topic or subject" className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 outline-none transition-all focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10" />
-                              <textarea value={manualDraft.content} onChange={(e) => setManualDraft((prev) => ({ ...prev, content: e.target.value }))} placeholder="Start writing your own notes here." className="min-h-[42rem] w-full rounded-[1.5rem] border border-slate-200 bg-white px-5 py-5 text-sm font-medium leading-7 text-slate-800 outline-none transition-all focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10" />
-                            </div>
-                          ) : <EmptyEditor title="Manual mode is ready" text="Create a manual note and this workspace becomes a full writing area for your own study material." />}
+                        </div>
+                        {selectedNote && selectedNote.type === 'manual' ? (
+                          <div className="space-y-4">
+                            <input type="text" value={manualDraft.title} onChange={(e) => setManualDraft((prev) => ({ ...prev, title: e.target.value }))} placeholder="Note title" className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition-all focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10" />
+                            <input type="text" value={manualDraft.topic} onChange={(e) => setManualDraft((prev) => ({ ...prev, topic: e.target.value }))} placeholder="Topic or subject" className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 outline-none transition-all focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10" />
+                            <textarea value={manualDraft.content} onChange={(e) => setManualDraft((prev) => ({ ...prev, content: e.target.value }))} placeholder="Start writing your own notes here." className="min-h-[42rem] w-full rounded-[1.5rem] border border-slate-200 bg-white px-5 py-5 text-sm font-medium leading-7 text-slate-800 outline-none transition-all focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10" />
+                          </div>
+                        ) : <EmptyEditor title="Manual mode is ready" text="Create a manual note and this workspace becomes a full writing area for your own study material." />}
                       </div>
                     </ModeShell>
                   ) : null}
+
                   {activeMode === 'ai' ? (
                     <ModeShell>
                       <div className="rounded-[1.75rem] border border-slate-200 bg-slate-50/70 p-6">
-                          <div className="mb-4 flex items-center justify-between">
-                            <h3 className="text-lg font-extrabold text-slate-900">AI Notes Generator</h3>
-                            <div className="flex gap-3">
-                              {selectedNote && selectedNote.type === 'ai' ? (
-                                <button onClick={saveAiNote} disabled={saving} className="rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 transition-colors hover:bg-slate-100">{saving ? 'Saving...' : 'Save'}</button>
-                              ) : null}
-                              <button onClick={generateAiNote} disabled={generating} className="inline-flex items-center gap-2 rounded-2xl bg-indigo-600 px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-indigo-700">
-                                <WandSparkles size={16} /> {generating ? 'Generating...' : 'Generate Note'}
-                              </button>
-                              <button
-                                onClick={() => setChatOpen(true)}
-                                disabled={!selectedNote || selectedNote.type !== 'ai'}
-                                className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
-                              >
-                                <MessageSquareText size={16} /> Chat with AI
-                              </button>
-                            </div>
+                        <div className="mb-4 flex items-center justify-between">
+                          <h3 className="text-lg font-extrabold text-slate-900">AI Notes Generator</h3>
+                          <div className="flex gap-3">
+                            {selectedNote && selectedNote.type === 'ai' ? (
+                              <button onClick={saveAiNote} disabled={saving} className="rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 transition-colors hover:bg-slate-100">{saving ? 'Saving...' : 'Save'}</button>
+                            ) : null}
+                            <button onClick={generateAiNote} disabled={generating} className="inline-flex items-center gap-2 rounded-2xl bg-indigo-600 px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-indigo-700">
+                              <WandSparkles size={16} /> {generating ? 'Generating...' : 'Generate Note'}
+                            </button>
+                            <button
+                              onClick={() => setChatOpen(true)}
+                              disabled={!selectedNote || selectedNote.type !== 'ai'}
+                              className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
+                            >
+                              <MessageSquareText size={16} /> Chat with AI
+                            </button>
                           </div>
-                          <div className="space-y-4">
-                            <input type="text" value={aiDraft.topic} onChange={(e) => setAiDraft((prev) => ({ ...prev, topic: e.target.value }))} placeholder="Enter a topic like SQL Injection or OSI Model" className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 outline-none transition-all focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10" />
-                            <select value={aiDraft.sessionId} onChange={(e) => setAiDraft((prev) => ({ ...prev, sessionId: e.target.value }))} className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 outline-none transition-all focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10">
-                              <option value="">Generate from topic only</option>
-                              {sessions.map((session) => (
-                                <option key={session.id} value={session.id}>{session.object} | {new Date(session.created_at).toLocaleDateString()}</option>
-                              ))}
-                            </select>
-                            <div className="rounded-[1.5rem] border border-slate-200 bg-white p-4">
-                              <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-indigo-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-indigo-700">
-                                <Sparkles size={14} /> AI Output
-                              </div>
-                              <textarea value={selectedNote?.type === 'ai' ? selectedNote.content : ''} onChange={(e) => selectedNote && setSelectedNote((prev) => ({ ...prev, content: e.target.value }))} placeholder="Your generated note will appear here." className="min-h-[40rem] w-full rounded-[1.25rem] border border-slate-200 bg-slate-50 px-5 py-5 text-sm font-medium leading-7 text-slate-800 outline-none transition-all focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10" />
+                        </div>
+                        <div className="space-y-4">
+                          <input type="text" value={aiDraft.topic} onChange={(e) => setAiDraft((prev) => ({ ...prev, topic: e.target.value }))} placeholder="Enter a topic like SQL Injection or OSI Model" className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 outline-none transition-all focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10" />
+                          <select value={aiDraft.sessionId} onChange={(e) => setAiDraft((prev) => ({ ...prev, sessionId: e.target.value }))} className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 outline-none transition-all focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10">
+                            <option value="">Generate from topic only</option>
+                            {sessions.map((session) => (
+                              <option key={session.id} value={session.id}>{session.object} | {new Date(session.created_at).toLocaleDateString()}</option>
+                            ))}
+                          </select>
+                          <div className="rounded-[1.5rem] border border-slate-200 bg-white p-4">
+                            <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-indigo-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-indigo-700">
+                              <Sparkles size={14} /> AI Output
                             </div>
-                            {activeSessionLabel ? <p className="text-xs font-medium text-slate-500">Linked analysis: {activeSessionLabel.object}</p> : null}
+                            <textarea value={selectedNote?.type === 'ai' ? selectedNote.content : ''} onChange={(e) => selectedNote && setSelectedNote((prev) => ({ ...prev, content: e.target.value }))} placeholder="Your generated note will appear here." className="min-h-[40rem] w-full rounded-[1.25rem] border border-slate-200 bg-slate-50 px-5 py-5 text-sm font-medium leading-7 text-slate-800 outline-none transition-all focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10" />
                           </div>
+                          {activeSessionLabel ? <p className="text-xs font-medium text-slate-500">Linked analysis: {activeSessionLabel.object}</p> : null}
+                        </div>
                       </div>
                     </ModeShell>
                   ) : null}
+
                   {activeMode === 'upload' ? (
                     <ModeShell>
                       <div className="rounded-[1.75rem] border border-slate-200 bg-slate-50/70 p-6">
-                          <div className="mb-4 flex items-center justify-between">
-                            <h3 className="text-lg font-extrabold text-slate-900">Upload Your Notes</h3>
-                            <div className="flex flex-wrap gap-3">
-                              {selectedNote && selectedNote.type === 'upload' ? (
-                                <button onClick={saveUploadedNote} disabled={saving} className="rounded-2xl bg-indigo-600 px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-indigo-700">{saving ? 'Saving...' : 'Save'}</button>
-                              ) : null}
-                              <button
-                                onClick={() => setChatOpen(true)}
-                                disabled={!selectedNote || selectedNote.type !== 'upload'}
-                                className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
-                              >
-                                <MessageSquareText size={16} /> Chat with AI
-                              </button>
-                            </div>
+                        <div className="mb-4 flex items-center justify-between">
+                          <h3 className="text-lg font-extrabold text-slate-900">Upload Your Notes</h3>
+                          <div className="flex flex-wrap gap-3">
+                            {selectedNote && selectedNote.type === 'upload' ? (
+                              <button onClick={saveUploadedNote} disabled={saving} className="rounded-2xl bg-indigo-600 px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-indigo-700">{saving ? 'Saving...' : 'Save'}</button>
+                            ) : null}
+                            <button
+                              onClick={() => setChatOpen(true)}
+                              disabled={!selectedNote || selectedNote.type !== 'upload'}
+                              className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
+                            >
+                              <MessageSquareText size={16} /> Chat with AI
+                            </button>
                           </div>
-                          <div className="space-y-4">
-                            <input type="text" value={uploadDraft.title} onChange={(e) => setUploadDraft((prev) => ({ ...prev, title: e.target.value }))} placeholder="Optional note title" className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 outline-none transition-all focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10" />
-                            <input type="text" value={uploadDraft.topic} onChange={(e) => setUploadDraft((prev) => ({ ...prev, topic: e.target.value }))} placeholder="Optional topic" className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 outline-none transition-all focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10" />
-                            <label className="flex cursor-pointer flex-col items-center justify-center rounded-[1.5rem] border border-dashed border-slate-300 bg-white px-6 py-10 text-center transition-colors hover:border-indigo-400 hover:bg-indigo-50/40">
-                              <Upload size={26} className="text-indigo-600" />
-                              <p className="mt-4 text-base font-extrabold text-slate-900">Upload PDF, TXT, or MD notes</p>
-                              <p className="mt-2 text-sm font-medium text-slate-500">We extract the text, save it to your account, and make it chat-ready.</p>
-                              <input type="file" accept=".pdf,.txt,.md,application/pdf,text/plain,text/markdown" className="hidden" onChange={(e) => setUploadDraft((prev) => ({ ...prev, file: e.target.files?.[0] || null }))} />
-                            </label>
-                            <div className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-3">
-                              <p className="text-sm font-medium text-slate-600">{uploadDraft.file?.name || selectedNote?.source_name || 'No file selected yet'}</p>
-                              <button onClick={uploadNoteFile} disabled={uploading || !uploadDraft.file} className="rounded-2xl bg-slate-900 px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60">{uploading ? 'Uploading...' : 'Upload Notes'}</button>
-                            </div>
-                            <textarea value={selectedNote?.type === 'upload' ? selectedNote.content : ''} onChange={(e) => selectedNote && setSelectedNote((prev) => ({ ...prev, content: e.target.value }))} placeholder="Uploaded note content will appear here." className="min-h-[38rem] w-full rounded-[1.5rem] border border-slate-200 bg-white px-5 py-5 text-sm font-medium leading-7 text-slate-800 outline-none transition-all focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10" />
+                        </div>
+                        <div className="space-y-4">
+                          <input type="text" value={uploadDraft.title} onChange={(e) => setUploadDraft((prev) => ({ ...prev, title: e.target.value }))} placeholder="Optional note title" className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 outline-none transition-all focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10" />
+                          <input type="text" value={uploadDraft.topic} onChange={(e) => setUploadDraft((prev) => ({ ...prev, topic: e.target.value }))} placeholder="Optional topic" className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 outline-none transition-all focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10" />
+                          <label className="flex cursor-pointer flex-col items-center justify-center rounded-[1.5rem] border border-dashed border-slate-300 bg-white px-6 py-10 text-center transition-colors hover:border-indigo-400 hover:bg-indigo-50/40">
+                            <Upload size={26} className="text-indigo-600" />
+                            <p className="mt-4 text-base font-extrabold text-slate-900">Upload PDF, TXT, or MD notes</p>
+                            <p className="mt-2 text-sm font-medium text-slate-500">We extract the text, save it to your account, and make it chat-ready.</p>
+                            <input type="file" accept=".pdf,.txt,.md,application/pdf,text/plain,text/markdown" className="hidden" onChange={(e) => setUploadDraft((prev) => ({ ...prev, file: e.target.files?.[0] || null }))} />
+                          </label>
+                          <div className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-3">
+                            <p className="text-sm font-medium text-slate-600">{uploadDraft.file?.name || selectedNote?.source_name || 'No file selected yet'}</p>
+                            <button onClick={uploadNoteFile} disabled={uploading || !uploadDraft.file} className="rounded-2xl bg-slate-900 px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60">{uploading ? 'Uploading...' : 'Upload Notes'}</button>
                           </div>
+                          <textarea value={selectedNote?.type === 'upload' ? selectedNote.content : ''} onChange={(e) => selectedNote && setSelectedNote((prev) => ({ ...prev, content: e.target.value }))} placeholder="Uploaded note content will appear here." className="min-h-[38rem] w-full rounded-[1.5rem] border border-slate-200 bg-white px-5 py-5 text-sm font-medium leading-7 text-slate-800 outline-none transition-all focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10" />
+                        </div>
                       </div>
+                    </ModeShell>
+                  ) : null}
+
+                  {activeMode === 'all' ? (
+                    <ModeShell>
+                      {filteredNotes.length === 0 ? (
+                        <EmptyEditor title="No notes yet" text="Create a manual note, generate an AI note, or upload a file to get started." />
+                      ) : (
+                        <div className="space-y-4">
+                          {filteredNotes.map((note) => (
+                            <button
+                              key={note.id}
+                              onClick={() => { setActiveMode(note.type); setSelectedNoteId(note.id); }}
+                              className="w-full rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-5 text-left transition-all hover:bg-white hover:shadow-sm"
+                            >
+                              <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400">{note.type}</p>
+                              <h3 className="mt-2 text-base font-extrabold text-slate-900">{note.title}</h3>
+                              <p className="mt-1 text-sm font-medium text-slate-500">{note.topic || note.source_name || 'No topic'}</p>
+                            </button>
+                          ))}
+                        </div>
+                      )}
                     </ModeShell>
                   ) : null}
                 </motion.div>
@@ -530,6 +557,7 @@ export default function Notes() {
           </div>
         )}
       </div>
+
       <AnimatePresence>
         {chatOpen ? (
           <motion.div

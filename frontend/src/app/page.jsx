@@ -1,6 +1,7 @@
+"use client";
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import {
   ArrowRight,
   Brain,
@@ -10,7 +11,7 @@ import {
   ScrollText,
   Sparkles,
 } from 'lucide-react';
-import BrandLogo from '../components/BrandLogo';
+import BrandLogo from '@/components/BrandLogo';
 
 const storyChapters = [
   {
@@ -44,14 +45,14 @@ export default function Landing() {
 
       <nav className="fixed inset-x-0 top-0 z-50 px-6 py-5">
         <div className="mx-auto flex max-w-7xl items-center justify-between rounded-full border border-white/10 bg-white/6 px-5 py-3 backdrop-blur-2xl">
-          <Link to="/" className="inline-flex">
+          <Link href="/" className="inline-flex">
             <BrandLogo size="md" className="[&_*]:text-white" />
           </Link>
           <div className="flex items-center gap-4">
-            <Link to="/login" className="text-sm font-black text-slate-200 transition-colors hover:text-white">
+            <Link href="/login" className="text-sm font-black text-slate-200 transition-colors hover:text-white">
               Log In
             </Link>
-            <Link to="/signup" className="rounded-full bg-white px-6 py-2.5 text-sm font-black text-slate-950 shadow-[0_18px_36px_rgba(255,255,255,0.12)] transition-transform hover:-translate-y-0.5">
+            <Link href="/signup" className="rounded-full bg-white px-6 py-2.5 text-sm font-black text-slate-950 shadow-[0_18px_36px_rgba(255,255,255,0.12)] transition-transform hover:-translate-y-0.5">
               Start Free
             </Link>
           </div>
@@ -76,10 +77,10 @@ export default function Landing() {
             </p>
 
             <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-              <Link to="/signup" className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-8 py-4 text-base font-black text-slate-950 shadow-[0_26px_58px_rgba(255,255,255,0.14)] transition-transform hover:-translate-y-1">
+              <Link href="/signup" className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-8 py-4 text-base font-black text-slate-950 shadow-[0_26px_58px_rgba(255,255,255,0.14)] transition-transform hover:-translate-y-1">
                 Start Studying <ArrowRight size={18} />
               </Link>
-              <Link to="/login" className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/6 px-8 py-4 text-base font-black text-white backdrop-blur-xl transition-colors hover:bg-white/10">
+              <Link href="/login" className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/6 px-8 py-4 text-base font-black text-white backdrop-blur-xl transition-colors hover:bg-white/10">
                 Open Workspace
               </Link>
             </div>
@@ -231,10 +232,10 @@ export default function Landing() {
           </div>
 
           <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-            <Link to="/signup" className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-8 py-4 text-base font-black text-slate-950 transition-transform hover:-translate-y-0.5">
+            <Link href="/signup" className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-8 py-4 text-base font-black text-slate-950 transition-transform hover:-translate-y-0.5">
               Start Free <ArrowRight size={18} className="text-sky-600" />
             </Link>
-            <Link to="/login" className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/6 px-8 py-4 text-base font-black text-white transition-colors hover:bg-white/10">
+            <Link href="/login" className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/6 px-8 py-4 text-base font-black text-white transition-colors hover:bg-white/10">
               Sign In
             </Link>
           </div>

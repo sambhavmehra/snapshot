@@ -2,6 +2,7 @@ import os
 import io
 import base64
 import json
+import hashlib
 import jwt
 from datetime import datetime, timedelta
 from functools import wraps
@@ -22,7 +23,11 @@ app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # Configuration
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'default-secret-key-super-secure')
+raw_secret_key = os.environ.get('SECRET_KEY', 'default-secret-key-super-secure')
+if len(raw_secret_key.encode('utf-8')) < 32:
+    # Derive a stable HS256-safe secret from short local/dev keys.
+    raw_secret_key = hashlib.sha256(raw_secret_key.encode('utf-8')).hexdigest()
+app.config['SECRET_KEY'] = raw_secret_key
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'snapstudy.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -122,6 +127,8 @@ def token_required(f):
         try:
             data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
             current_user = User.query.filter_by(id=data['user_id']).first()
+            if current_user is None:
+                return jsonify({'message': 'Token is invalid!', 'error': 'User no longer exists'}), 401
         except Exception as e:
             return jsonify({'message': 'Token is invalid!', 'error': str(e)}), 401
         
@@ -358,6 +365,8 @@ def analyze_image(current_user):
     try:
         ai_settings = get_or_create_ai_settings(current_user.id)
         image_bytes = file.read()
+        if not image_bytes:
+            return jsonify({"error": "Uploaded image is empty"}), 400
         mime_type = file.mimetype
         if not mime_type or not mime_type.startswith("image/"):
             mime_type = "image/jpeg"
@@ -393,16 +402,28 @@ def analyze_image(current_user):
             }
         ]
 
-        response = groq_client.chat.completions.create(
-            model=VISION_MODEL,
-            messages=messages,
-            temperature=0.2,
-            max_tokens=800,
-        )
-        
-        content = response.choices[0].message.content
+        try:
+            response = groq_client.chat.completions.create(
+                model=VISION_MODEL,
+                messages=messages,
+                temperature=0.2,
+                max_tokens=800,
+            )
+        except Exception as e:
+            return jsonify({"error": f"AI analysis request failed: {str(e)}"}), 502
+
+        content = response.choices[0].message.content if response.choices else ""
         content = content.replace("```json", "").replace("```", "").strip()
-        data = json.loads(content)
+        if not content:
+            return jsonify({"error": "AI analysis returned an empty response"}), 502
+
+        try:
+            data = json.loads(content)
+        except json.JSONDecodeError:
+            return jsonify({
+                "error": "AI analysis returned invalid JSON",
+                "raw": content[:500]
+            }), 502
         
         # Save to DB
         session = StudySession(

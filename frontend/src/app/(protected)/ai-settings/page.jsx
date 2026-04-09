@@ -1,8 +1,9 @@
+"use client";
 import React, { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import { Bot, ChevronDown, Save, SlidersHorizontal } from 'lucide-react';
-import { AuthContext } from '../context/AuthContext';
-import Layout from '../components/Layout';
+import { AuthContext } from '@/context/AuthContext';
+import Layout from '@/components/Layout';
 
 const presets = {
   perspective: ['student', 'beginner', 'exam candidate', 'teacher assistant', 'developer', 'cybersecurity learner'],

@@ -1,6 +1,7 @@
+"use client";
 import React, { useContext, useState } from 'react';
-import { AuthContext } from '../context/AuthContext';
-import Layout from '../components/Layout';
+import { AuthContext } from '@/context/AuthContext';
+import Layout from '@/components/Layout';
 import {
   BadgeCheck,
   KeyRound,

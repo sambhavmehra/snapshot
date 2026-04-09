@@ -1,7 +1,9 @@
+"use client";
 import React, { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link, useSearchParams } from 'react-router-dom';
+import { useSearchParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
 import {
   ArrowRight,
   BadgeCheck,
@@ -11,11 +13,11 @@ import {
   Layers3,
   Sparkles,
 } from 'lucide-react';
-import { AuthContext } from '../context/AuthContext';
-import Layout from '../components/Layout';
-import ImageUploader from '../components/ImageUploader';
-import AnalysisResult from '../components/AnalysisResult';
-import ChatInterface from '../components/ChatInterface';
+import { AuthContext } from '@/context/AuthContext';
+import Layout from '@/components/Layout';
+import ImageUploader from '@/components/ImageUploader';
+import AnalysisResult from '@/components/AnalysisResult';
+import ChatInterface from '@/components/ChatInterface';
 
 const quickStats = [
   {
@@ -62,7 +64,8 @@ export default function Dashboard() {
   const [initialMessages, setInitialMessages] = useState(undefined);
   const [sessionLoading, setSessionLoading] = useState(false);
   const { token, user } = useContext(AuthContext);
-  const [searchParams, setSearchParams] = useSearchParams();
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const firstName = user?.username?.split(' ')[0] || 'Learner';
 
   useEffect(() => {
@@ -100,7 +103,8 @@ export default function Dashboard() {
     setImageMime(null);
     setSessionId(null);
     setInitialMessages(undefined);
-    setSearchParams({});
+    // Clear session param from URL
+    router.replace('/dashboard');
 
     const formData = new FormData();
     formData.append('image', file);
@@ -131,7 +135,7 @@ export default function Dashboard() {
     setImageMime(null);
     setSessionId(null);
     setInitialMessages(undefined);
-    setSearchParams({});
+    router.replace('/dashboard');
   };
 
   return (
@@ -223,7 +227,7 @@ export default function Dashboard() {
                 {sessionId ? (
                   <div className="mt-5">
                     <Link
-                      to={`/notes?mode=ai&session=${sessionId}`}
+                      href={`/notes?mode=ai&session=${sessionId}`}
                       className="inline-flex items-center gap-2 rounded-2xl border border-sky-300/20 bg-sky-400/10 px-4 py-3 text-sm font-bold text-sky-100 transition-colors hover:bg-sky-400/15"
                     >
                       <Sparkles size={16} />
